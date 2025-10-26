@@ -442,30 +442,9 @@ io.on("connection", (socket) => {
       console.log(`📨 Connection request (online): ${fromKey.slice(0, 12)}... → ${toKey.slice(0, 12)}...`);
     } else {
       // --- NEW LOGIC for OFFLINE users with Sleep Mode ---
-      console.log(`⚠️ User ${toKey.slice(0, 12)} is offline. Checking for push subscription...`);
-      const subscription = await storage.getItem(`sub_${toKey}`);
-      
-      if (subscription) {
-        try {
-          const payload = JSON.stringify({
-            title: "Syrja: New Connection Request",
-            body: `A contact wants to chat with you.` // Body is kept generic for privacy
-          });
-
-          await webpush.sendNotification(subscription, payload);
-          console.log(`🚀 Push notification sent to sleeping user: ${toKey.slice(0, 12)}...`);
-        } catch (err) {
-          console.error(`❌ Failed to send push notification to ${toKey.slice(0, 12)}...`, err.body || err);
-          // If subscription is invalid (e.g., user cleared data), remove it.
-          if (err.statusCode === 404 || err.statusCode === 410) {
-            console.log(`🗑️ Removing expired push subscription for ${toKey.slice(0, 12)}...`);
-            await storage.removeItem(`sub_${toKey}`);
-          }
-        }
-      } else {
-      // User is offline. The web-push logic has been removed for the Electron app.
-        console.log(`- User ${toKey.slice(0, 12)}... is offline. No notification sent.`);
-      }
+     // (Inside the else block for offline users in socket.on("request-connection", ...))
+      console.log(`- User ${toKey.slice(0, 12)}... is offline. No push notification configured/sent.`);
+// All the 'storage.getItem', 'if (subscription)', and 'webpush' code is removed.
     }
   });
 
